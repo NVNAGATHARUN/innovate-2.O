@@ -1,0 +1,2330 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>IntelliFlow AI Grid — Intelligent Traffic Optimization</title>
+  <meta name="description"
+    content="AI traffic optimization with predictive signal control and zero-delay emergency response">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --c: #00e5ff;
+      --v: #7c3aed;
+      --g: #00ff88;
+      --a: #f59e0b;
+      --tp: #f0f4ff;
+      --td: #4a6080;
+      --e1: rgba(0, 229, 255, .12);
+      --e2: rgba(255, 255, 255, .05)
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      background: #020408;
+      color: var(--tp);
+      font-family: 'Montserrat', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden
+    }
+
+    .bl {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: .18;
+      pointer-events: none;
+      z-index: 0;
+      will-change: transform
+    }
+
+    .bl.a {
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, var(--c), transparent 70%);
+      top: 0;
+      left: 0;
+      animation: bm1 25s ease-in-out infinite
+    }
+
+    .bl.b {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, var(--v), transparent 70%);
+      bottom: 0;
+      right: 0;
+      animation: bm2 30s ease-in-out infinite
+    }
+
+    .bl.c {
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, var(--g), transparent 70%);
+      top: 40%;
+      left: 40%;
+      animation: bm3 20s ease-in-out infinite
+    }
+
+    #bgc {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none
+    }
+
+    .grn {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: .02;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 180px
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      z-index: 100;
+      background: rgba(6, 13, 24, .85);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--e1);
+      display: flex;
+      align-items: center;
+      padding: 0 36px;
+      gap: 20px
+    }
+
+    .nl {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0
+    }
+
+    .nhx {
+      width: 44px;
+      height: 44px;
+      animation: brth 3s ease-in-out infinite
+    }
+
+    .nt {
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      white-space: nowrap
+    }
+
+    .nt em {
+      font-style: normal;
+      background: linear-gradient(90deg, var(--c), #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text
+    }
+
+    #tn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+      justify-content: center
+    }
+
+    .tb {
+      padding: 9px 22px;
+      border-radius: 999px;
+      border: none;
+      background: transparent;
+      color: var(--td);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 13.5px;
+      font-weight: 500;
+      cursor: pointer;
+      position: relative;
+      transition: color .25s, background .25s
+    }
+
+    .tb::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 2px;
+      background: var(--c);
+      border-radius: 2px;
+      transition: width .25s;
+      box-shadow: 0 0 8px var(--c)
+    }
+
+    .tb.on {
+      color: var(--tp);
+      background: rgba(0, 229, 255, .06)
+    }
+
+    .tb.on::after {
+      width: 60%
+    }
+
+    .nr {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-shrink: 0
+    }
+
+    .lbg {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--g)
+    }
+
+    .ldt {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--g);
+      box-shadow: 0 0 8px var(--g);
+      animation: pg 1.5s ease-in-out infinite
+    }
+
+    .bwp {
+      position: relative;
+      cursor: pointer
+    }
+
+    .bbd {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #ef4444;
+      font-size: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      color: #fff;
+      font-weight: 600
+    }
+
+    .avt {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--c), var(--v));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700
+    }
+
+    #hbg {
+      display: none;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      flex-direction: column;
+      gap: 5px;
+      padding: 4px;
+      margin-left: auto
+    }
+
+    #hbg span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--tp);
+      border-radius: 2px
+    }
+
+    #mmnav {
+      display: none;
+      position: fixed;
+      top: 80px;
+      left: 0;
+      right: 0;
+      background: rgba(6, 13, 24, .97);
+      padding: 16px;
+      z-index: 99;
+      flex-direction: column;
+      gap: 4px;
+      border-bottom: 1px solid var(--e1)
+    }
+
+    #mmnav.op {
+      display: flex
+    }
+
+    #mmnav .tb {
+      text-align: left;
+      border-radius: 8px;
+      padding: 12px 16px
+    }
+
+    #ct {
+      position: relative;
+      z-index: 2;
+      padding-top: 80px
+    }
+
+    .pnl {
+      display: none;
+      animation: fsi .28s ease
+    }
+
+    .pnl.on {
+      display: block
+    }
+
+    .gl {
+      background: rgba(6, 15, 30, .65);
+      backdrop-filter: blur(18px);
+      border: 1px solid var(--e1);
+      border-radius: 16px
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 48px 60px;
+      gap: 60px;
+      max-width: 1400px;
+      margin: 0 auto
+    }
+
+    .hlt {
+      flex: 1;
+      min-width: 0
+    }
+
+    .hlb {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: var(--c);
+      text-transform: uppercase;
+      margin-bottom: 28px;
+      opacity: 0;
+      animation: fsi .5s .2s forwards
+    }
+
+    .hh {
+      font-size: clamp(42px, 5.5vw, 72px);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 24px
+    }
+
+    .wd {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(20px)
+    }
+
+    .gw {
+      color: var(--c);
+      text-shadow: 0 0 30px rgba(0, 229, 255, .4)
+    }
+
+    .hsu {
+      font-size: 18px;
+      color: var(--td);
+      opacity: 0;
+      animation: fsi .5s 1.2s forwards;
+      margin-bottom: 40px;
+      max-width: 520px;
+      line-height: 1.6
+    }
+
+    .hbt {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fsi .5s 1.4s forwards
+    }
+
+    .bpr {
+      padding: 13px 28px;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(135deg, var(--c), var(--v));
+      color: #fff;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform .2s, box-shadow .2s;
+      will-change: transform
+    }
+
+    .bpr::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .25), transparent);
+      animation: shim 2.5s infinite
+    }
+
+    .bpr:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 24px rgba(0, 229, 255, .35)
+    }
+
+    .bsc {
+      padding: 13px 28px;
+      border-radius: 10px;
+      border: 1px solid var(--c);
+      background: transparent;
+      color: var(--c);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s, transform .2s;
+      will-change: transform
+    }
+
+    .bsc:hover {
+      background: rgba(0, 229, 255, .08);
+      backdrop-filter: blur(18px);
+      transform: scale(1.03)
+    }
+
+    .hrg {
+      flex: 0 0 460px;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .qsec {
+      padding: 100px 48px;
+      text-align: center;
+      position: relative
+    }
+
+    .qtt {
+      font-size: clamp(22px, 3vw, 36px);
+      font-style: italic;
+      font-weight: 600;
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative
+    }
+
+    .scln {
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 80px;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 229, 255, .25), transparent);
+      animation: scn 2.5s 1.5s ease forwards
+    }
+
+    .qgl {
+      position: absolute;
+      inset: -60px;
+      background: radial-gradient(ellipse, rgba(0, 229, 255, .06), transparent 70%);
+      pointer-events: none
+    }
+
+    .pssec {
+      padding: 60px 48px 60px;
+      max-width: 1200px;
+      margin: 0 auto
+    }
+
+    .pssec-inner {
+      background: rgba(6, 15, 30, .75);
+      backdrop-filter: blur(18px);
+      border: 2px solid var(--c);
+      border-radius: 4px;
+      padding: 48px 40px;
+      box-shadow: 0 0 40px rgba(0, 229, 255, .15);
+      position: relative
+    }
+
+    .psg {
+      display: grid;
+      grid-template-columns: 1fr 40px 1fr;
+      gap: 0 12px
+    }
+
+    .psh {
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      display: inline-block
+    }
+
+    .psh.rr {
+      color: var(--a);
+      background: rgba(245, 158, 11, .08)
+    }
+
+    .psh.ss {
+      color: var(--g);
+      background: rgba(0, 255, 136, .06)
+    }
+
+    .pchd {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 16px
+    }
+
+    .parc {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-around;
+      padding-top: 50px
+    }
+
+    .parr {
+      color: var(--c);
+      font-size: 24px;
+      font-weight: 700;
+      animation: ap 1.5s ease-in-out infinite
+    }
+
+    .pcd {
+      padding: 20px 24px;
+      border-radius: 12px;
+      margin-bottom: 14px;
+      font-size: 15.5px;
+      line-height: 1.6;
+      font-weight: 500
+    }
+
+    .pcd.rr {
+      background: rgba(245, 158, 11, .06);
+      border: 1px solid rgba(245, 158, 11, .2);
+      color: #fcd34d
+    }
+
+    .pcd.ss {
+      background: rgba(0, 255, 136, .05);
+      border: 1px solid rgba(0, 255, 136, .2);
+      color: #6ee7b7
+    }
+
+    .ftsec {
+      padding: 60px 48px;
+      max-width: 1200px;
+      margin: 0 auto
+    }
+
+    .stl {
+      text-align: center;
+      font-size: 26px;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 3px;
+      color: var(--c);
+      margin-bottom: 48px;
+      text-transform: uppercase
+    }
+
+    .cgd {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px
+    }
+
+    .fcd {
+      background: rgba(8, 18, 32, .7);
+      backdrop-filter: blur(18px);
+      border: 1px solid var(--e1);
+      border-radius: 16px;
+      padding: 28px;
+      cursor: pointer;
+      transition: transform .25s, border-color .25s, box-shadow .25s;
+      will-change: transform
+    }
+
+    .fcd:hover {
+      transform: translateY(-8px);
+      border-color: rgba(0, 229, 255, .35);
+      box-shadow: 0 16px 48px rgba(0, 229, 255, .1)
+    }
+
+    .fcd:hover .fic {
+      transform: scale(1.15);
+      animation: wig .2s ease
+    }
+
+    .fic {
+      font-size: 40px;
+      display: block;
+      margin-bottom: 16px;
+      transition: transform .25s;
+      will-change: transform
+    }
+
+    .ftl {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px
+    }
+
+    .fds {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--td);
+      line-height: 1.6;
+      margin-bottom: 16px
+    }
+
+    .fst {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--g)
+    }
+
+    .stsec {
+      padding: 80px 48px;
+      text-align: center
+    }
+
+    .strw {
+      display: flex;
+      justify-content: center;
+      gap: 80px;
+      flex-wrap: wrap;
+      max-width: 900px;
+      margin: 0 auto
+    }
+
+    .stn {
+      font-size: clamp(48px, 6vw, 72px);
+      font-weight: 800;
+      color: var(--c);
+      text-shadow: 0 0 30px rgba(0, 229, 255, .5);
+      font-family: 'Montserrat', sans-serif;
+      display: block
+    }
+
+    .stlb {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--td);
+      margin-top: 6px
+    }
+
+    footer {
+      border-top: 1px solid var(--e2);
+      padding: 30px 48px;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--td)
+    }
+
+    .smw {
+      max-width: 960px;
+      margin: 60px auto;
+      padding: 0 24px
+    }
+
+    .smh {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+      font-size: 20px;
+      font-weight: 700
+    }
+
+    .bld {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--g);
+      animation: blk 1s ease-in-out infinite
+    }
+
+    .smc {
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: #030810;
+      border: 1px solid var(--e1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      color: var(--td);
+      margin-bottom: 20px;
+      text-align: center;
+      padding: 20px;
+      flex-direction: column;
+      gap: 8px
+    }
+
+    .smk {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px
+    }
+
+    .chp {
+      background: rgba(8, 18, 32, .7);
+      border: 1px solid var(--e1);
+      border-radius: 8px;
+      padding: 10px 18px;
+      flex: 1;
+      text-align: center
+    }
+
+    .chv {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--c);
+      font-family: 'Montserrat', sans-serif
+    }
+
+    .chl {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--td);
+      margin-top: 3px
+    }
+
+    .smb {
+      display: flex;
+      gap: 12px
+    }
+
+    .bgb {
+      padding: 11px 24px;
+      border-radius: 8px;
+      border: none;
+      background: linear-gradient(135deg, #00ff88, #00b386);
+      color: #001a0d;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s
+    }
+
+    .bgb:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 20px rgba(0, 255, 136, .35)
+    }
+
+    .brb {
+      padding: 11px 24px;
+      border-radius: 8px;
+      border: none;
+      background: linear-gradient(135deg, #ff4444, #cc0000);
+      color: #fff;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s
+    }
+
+    .brb:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 20px rgba(255, 68, 68, .35)
+    }
+
+    .anw {
+      max-width: 1000px;
+      margin: 60px auto;
+      padding: 0 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px
+    }
+
+    .cpn {
+      width: 100%;
+      padding: 24px
+    }
+
+    .clb {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--td);
+      margin-bottom: 12px
+    }
+
+    .pbw {
+      margin-bottom: 14px
+    }
+
+    .pbl {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--td);
+      margin-bottom: 6px
+    }
+
+    .pbt {
+      height: 8px;
+      background: rgba(255, 255, 255, .05);
+      border-radius: 4px;
+      overflow: hidden
+    }
+
+    .pbf {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--c), var(--v));
+      width: 0;
+      transition: width 1.2s ease
+    }
+
+    .baw {
+      max-width: 1000px;
+      margin: 60px auto;
+      padding: 0 24px
+    }
+
+    .bag {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 30px
+    }
+
+    .bap {
+      padding: 28px;
+      border-radius: 16px
+    }
+
+    .bap.bfr {
+      background: rgba(245, 158, 11, .05);
+      border: 1.5px solid rgba(245, 158, 11, .25)
+    }
+
+    .bap.afr {
+      background: rgba(0, 255, 136, .04);
+      border: 1.5px solid rgba(0, 255, 136, .25)
+    }
+
+    .bapt {
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 2px;
+      margin-bottom: 20px
+    }
+
+    .bfr .bapt {
+      color: #f87171
+    }
+
+    .afr .bapt {
+      color: var(--g)
+    }
+
+    .barw {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--e2);
+      font-size: 13px
+    }
+
+    .barw:last-child {
+      border-bottom: none
+    }
+
+    .bmv {
+      color: var(--td);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px
+    }
+
+    .vbd {
+      color: #f87171;
+      font-weight: 600
+    }
+
+    .vgd {
+      color: var(--g);
+      font-weight: 600
+    }
+
+    .bai {
+      text-align: center;
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--g);
+      text-shadow: 0 0 24px rgba(0, 255, 136, .4);
+      margin-top: 24px
+    }
+
+    .prw {
+      max-width: 1000px;
+      margin: 60px auto;
+      padding: 0 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px
+    }
+
+    .prp {
+      padding: 28px
+    }
+
+    .prtl {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 20px
+    }
+
+    .tlc {
+      display: flex;
+      align-items: center;
+      padding: 20px 0;
+      overflow-x: auto
+    }
+
+    .tln {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+      min-width: 80px
+    }
+
+    .tld {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid var(--td);
+      transition: all .4s
+    }
+
+    .tld.on {
+      background: var(--g);
+      border-color: var(--g);
+      box-shadow: 0 0 16px var(--g);
+      animation: pg 1.5s infinite
+    }
+
+    .tld.ps {
+      background: #334155;
+      border-color: #334155
+    }
+
+    .tll {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--td);
+      text-align: center
+    }
+
+    .tli {
+      flex: 1;
+      height: 2px;
+      background: var(--e2);
+      margin-bottom: 24px;
+      min-width: 30px
+    }
+
+    .qgc {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px
+    }
+
+    .qbs {
+      display: flex;
+      flex-direction: column;
+      gap: 10px
+    }
+
+    .qbr {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .qbl {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--td);
+      width: 20px;
+      flex-shrink: 0
+    }
+
+    .qbt {
+      flex: 1;
+      height: 10px;
+      background: rgba(255, 255, 255, .05);
+      border-radius: 5px;
+      overflow: hidden
+    }
+
+    .qbf {
+      height: 100%;
+      border-radius: 5px;
+      background: linear-gradient(90deg, var(--v), var(--c));
+      transition: width .35s ease
+    }
+
+    .sgd {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px
+    }
+
+    .sgc {
+      aspect-ratio: 1;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      transition: all .4s ease;
+      font-weight: 500
+    }
+
+    .ag4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 20px
+    }
+
+    /* ═══════ ANALYTICS DASHBOARD ═══════ */
+    #pna { position:relative; overflow:hidden }
+    #an-particles { position:absolute; inset:0; z-index:0; pointer-events:none }
+    .an-wrap { position:relative; z-index:1; max-width:1100px; margin:0 auto; padding:40px 24px 60px; display:flex; flex-direction:column; gap:22px }
+    .an-header { display:flex; align-items:center; gap:12px; margin-bottom:4px }
+    .an-header-dot { width:10px; height:10px; border-radius:50%; background:#00ff88; box-shadow:0 0 12px #00ff88; animation:blk 1.2s ease-in-out infinite }
+    .an-header h2 { font-size:22px; font-weight:700; letter-spacing:-0.3px }
+    .an-header h2 em { font-style:normal; background:linear-gradient(90deg,#00e5ff,#a78bfa); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text }
+    .an-header-badge { font-size:10px; font-family:'JetBrains Mono',monospace; padding:3px 10px; border-radius:20px; background:rgba(0,229,255,.08); border:1px solid rgba(0,229,255,.25); color:#00e5ff; letter-spacing:1.5px; margin-left:auto; animation:pg 2s ease-in-out infinite }
+
+    /* KPI Cards */
+    .kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px }
+    .kpi-card { background:rgba(6,15,30,.7); backdrop-filter:blur(18px); border:1px solid rgba(0,229,255,.1); border-radius:16px; padding:22px 20px; position:relative; overflow:hidden; transition:transform .25s,border-color .25s,box-shadow .25s; cursor:default }
+    .kpi-card:hover { transform:translateY(-6px); border-color:rgba(0,229,255,.35); box-shadow:0 12px 40px rgba(0,229,255,.1) }
+    .kpi-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:16px 16px 0 0 }
+    .kpi-card:nth-child(1)::before { background:linear-gradient(90deg,#00ff88,#00e5ff) }
+    .kpi-card:nth-child(2)::before { background:linear-gradient(90deg,#00e5ff,#7c3aed) }
+    .kpi-card:nth-child(3)::before { background:linear-gradient(90deg,#f59e0b,#ef4444) }
+    .kpi-card:nth-child(4)::before { background:linear-gradient(90deg,#7c3aed,#00ff88) }
+    .kpi-icon { font-size:28px; margin-bottom:8px; display:block; filter:drop-shadow(0 0 8px rgba(0,229,255,.4)) }
+    .kpi-label { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:1.5px; color:#4a6080; text-transform:uppercase; margin-bottom:8px }
+    .kpi-value { font-size:36px; font-weight:800; font-family:'Montserrat',sans-serif; line-height:1; transition:color .3s }
+    .kpi-value.green { color:#00ff88; text-shadow:0 0 20px rgba(0,255,136,.3) }
+    .kpi-value.cyan { color:#00e5ff; text-shadow:0 0 20px rgba(0,229,255,.3) }
+    .kpi-value.amber { color:#f59e0b; text-shadow:0 0 20px rgba(245,158,11,.3) }
+    .kpi-value.violet { color:#a78bfa; text-shadow:0 0 20px rgba(167,139,250,.3) }
+    .kpi-value.red { color:#ef4444; text-shadow:0 0 20px rgba(239,68,68,.3) }
+    .kpi-delta { font-family:'JetBrains Mono',monospace; font-size:10px; margin-top:6px; color:#4a6080 }
+    .kpi-delta b { color:#00ff88 }
+    .kpi-sparkline { position:absolute; bottom:0; left:0; right:0; height:30px; opacity:.25 }
+
+    /* Live Traffic Graph */
+    .an-graph-card { background:rgba(6,15,30,.7); backdrop-filter:blur(18px); border:1px solid rgba(0,229,255,.1); border-radius:16px; padding:24px; position:relative; overflow:hidden }
+    .an-graph-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px }
+    .an-graph-title { font-size:13px; font-weight:600; display:flex; align-items:center; gap:8px }
+    .an-graph-title .dot { width:6px; height:6px; border-radius:50%; background:#00ff88; box-shadow:0 0 8px #00ff88; animation:blk 1s ease-in-out infinite }
+    .an-graph-badge { font-family:'JetBrains Mono',monospace; font-size:9px; padding:3px 8px; border-radius:12px; background:rgba(0,229,255,.08); border:1px solid rgba(0,229,255,.2); color:#00e5ff }
+    #an-flow-svg { display:block; width:100%; filter:drop-shadow(0 0 6px rgba(0,229,255,.4)) }
+
+    /* Two-col layout */
+    .an-split { display:grid; grid-template-columns:1fr 1fr; gap:16px }
+
+    /* Progress Bars Panel */
+    .an-progress-card { background:rgba(6,15,30,.7); backdrop-filter:blur(18px); border:1px solid rgba(0,229,255,.1); border-radius:16px; padding:24px }
+    .an-progress-title { font-size:13px; font-weight:600; margin-bottom:18px; display:flex; align-items:center; gap:8px }
+    .an-pb { margin-bottom:16px }
+    .an-pb:last-child { margin-bottom:0 }
+    .an-pb-header { display:flex; justify-content:space-between; margin-bottom:6px }
+    .an-pb-label { font-family:'JetBrains Mono',monospace; font-size:10px; color:#4a6080; letter-spacing:.5px }
+    .an-pb-val { font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:#f0f4ff }
+    .an-pb-track { height:10px; background:rgba(255,255,255,.04); border-radius:5px; overflow:hidden; position:relative }
+    .an-pb-fill { height:100%; border-radius:5px; transition:width 1s ease; position:relative; overflow:hidden }
+    .an-pb-fill::after { content:''; position:absolute; top:0; left:-100%; width:60%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent); animation:shim 2s infinite }
+    .an-pb-fill.co2 { background:linear-gradient(90deg,#00ff88,#00e5ff); box-shadow:0 0 12px rgba(0,255,136,.3) }
+    .an-pb-fill.fuel { background:linear-gradient(90deg,#00e5ff,#7c3aed); box-shadow:0 0 12px rgba(0,229,255,.3) }
+    .an-pb-fill.idle { background:linear-gradient(90deg,#f59e0b,#ef4444); box-shadow:0 0 12px rgba(245,158,11,.3) }
+    .an-pb-fill.eff { background:linear-gradient(90deg,#7c3aed,#00ff88); box-shadow:0 0 12px rgba(124,58,237,.3) }
+
+    /* AI Insight Panel */
+    .an-insight-card { background:rgba(6,15,30,.7); backdrop-filter:blur(18px); border:1px solid rgba(124,58,237,.2); border-radius:16px; padding:24px; position:relative; overflow:hidden }
+    .an-insight-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,#7c3aed,#00e5ff,#00ff88); animation:an-insight-line 3s linear infinite }
+    @keyframes an-insight-line { 0%{background-position:0% 50%} 100%{background-position:200% 50%} }
+    .an-insight-title { font-size:13px; font-weight:600; margin-bottom:14px; display:flex; align-items:center; gap:8px }
+    .an-insight-title .brain { animation:brth 2s ease-in-out infinite }
+    .an-insight-messages { min-height:110px; position:relative }
+    .an-insight-msg { font-family:'JetBrains Mono',monospace; font-size:11px; line-height:1.8; padding:8px 12px; border-radius:8px; background:rgba(255,255,255,.02); border-left:3px solid rgba(0,229,255,.4); margin-bottom:8px; opacity:0; transform:translateX(-10px); transition:opacity .4s,transform .4s; color:#94a3b8 }
+    .an-insight-msg.visible { opacity:1; transform:translateX(0) }
+    .an-insight-msg b { color:#00e5ff }
+    .an-insight-msg .warn { color:#f59e0b }
+    .an-insight-msg .good { color:#00ff88 }
+    .an-insight-msg .em { color:#f472b6 }
+    .an-insight-typing { font-family:'JetBrains Mono',monospace; font-size:10px; color:#4a6080; display:flex; align-items:center; gap:6px; margin-top:8px }
+    .an-insight-typing .dots span { display:inline-block; width:4px; height:4px; border-radius:50%; background:#4a6080; margin:0 1px; animation:an-dot-bounce .6s ease infinite }
+    .an-insight-typing .dots span:nth-child(2) { animation-delay:.15s }
+    .an-insight-typing .dots span:nth-child(3) { animation-delay:.3s }
+    @keyframes an-dot-bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+
+    /* Predictive Chart */
+    .an-predict-card { background:rgba(6,15,30,.7); backdrop-filter:blur(18px); border:1px solid rgba(124,58,237,.15); border-radius:16px; padding:24px }
+    .an-predict-title { font-size:13px; font-weight:600; margin-bottom:16px; display:flex; align-items:center; gap:8px }
+    #an-predict-svg { display:block; width:100%; filter:drop-shadow(0 0 4px rgba(124,58,237,.3)) }
+
+    /* QAOA State Panel */
+    .an-qaoa-card { background:rgba(6,15,30,.7); backdrop-filter:blur(18px); border:1px solid rgba(124,58,237,.2); border-radius:16px; padding:24px }
+    .an-qaoa-title { font-size:13px; font-weight:600; margin-bottom:16px; display:flex; align-items:center; gap:8px }
+    .an-qaoa-grid { display:flex; flex-direction:column; gap:10px }
+    .an-qubit-row { display:flex; align-items:center; gap:10px }
+    .an-qubit-label { font-family:'JetBrains Mono',monospace; font-size:11px; color:#a78bfa; width:30px; flex-shrink:0 }
+    .an-qubit-track { flex:1; height:14px; background:rgba(124,58,237,.08); border-radius:7px; overflow:hidden; border:1px solid rgba(124,58,237,.15) }
+    .an-qubit-fill { height:100%; border-radius:7px; background:linear-gradient(90deg,#7c3aed,#00e5ff); transition:width .5s ease; box-shadow:0 0 10px rgba(124,58,237,.4); position:relative }
+    .an-qubit-fill::after { content:''; position:absolute; top:0; right:0; width:4px; height:100%; background:#fff; border-radius:0 7px 7px 0; opacity:.6; animation:pg 1.5s ease-in-out infinite }
+    .an-qubit-pct { font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:#c4b5fd; width:36px; text-align:right }
+    .an-qaoa-states { display:grid; grid-template-columns:repeat(4,1fr); gap:4px; margin-top:14px }
+    .an-qs { height:26px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:8px; font-weight:700; border:1px solid rgba(124,58,237,.15); background:rgba(124,58,237,.04); color:#a78bfa; transition:all .3s }
+    .an-qs.hot { background:rgba(124,58,237,.35); border-color:#7c3aed; color:#ede9fe; box-shadow:0 0 8px rgba(124,58,237,.3) }
+    .an-qaoa-result { font-family:'JetBrains Mono',monospace; font-size:10px; color:#a78bfa; margin-top:12px; padding:8px 12px; background:rgba(124,58,237,.06); border-radius:8px; border:1px solid rgba(124,58,237,.12); line-height:1.6 }
+
+    /* Footer bar */
+    .an-footer { display:flex; justify-content:center; gap:24px; padding:12px 0; font-family:'JetBrains Mono',monospace; font-size:10px; color:#4a6080 }
+    .an-footer span b { color:#00e5ff }
+
+    @media(max-width:768px) {
+      .kpi-grid { grid-template-columns:1fr 1fr }
+      .an-split { grid-template-columns:1fr }
+      .an-qaoa-states { grid-template-columns:repeat(4,1fr) }
+    }
+    @media(max-width:480px) {
+      .kpi-grid { grid-template-columns:1fr }
+    }
+
+    .sim-btn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--td);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.25s ease;
+    }
+    .sim-btn:hover {
+      transform: translateY(-2px);
+      color: #fff;
+    }
+    .sim-btn.sim-cyan:hover {
+      border-color: var(--c);
+      background: rgba(0, 229, 255, 0.1);
+      box-shadow: 0 4px 12px rgba(0, 229, 255, 0.2);
+    }
+    .sim-btn.sim-violet:hover {
+      border-color: var(--v);
+      background: rgba(124, 58, 237, 0.1);
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+    }
+    .sim-btn.sim-amber:hover {
+      border-color: var(--a);
+      background: rgba(245, 158, 11, 0.1);
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+    }
+
+    @keyframes fsi {
+      from {
+        opacity: 0;
+        transform: translateY(12px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    @keyframes brth {
+
+      0%,
+      100% {
+        filter: drop-shadow(0 0 6px var(--c))
+      }
+
+      50% {
+        filter: drop-shadow(0 0 18px var(--c))
+      }
+    }
+
+    @keyframes bm1 {
+      0% {
+        transform: translate(-10%, -15%)
+      }
+
+      33% {
+        transform: translate(30%, 20%)
+      }
+
+      66% {
+        transform: translate(60%, -10%)
+      }
+
+      100% {
+        transform: translate(-10%, -15%)
+      }
+    }
+
+    @keyframes bm2 {
+      0% {
+        transform: translate(0, 0)
+      }
+
+      40% {
+        transform: translate(-50%, 30%)
+      }
+
+      100% {
+        transform: translate(0, 0)
+      }
+    }
+
+    @keyframes bm3 {
+      0% {
+        transform: translate(0, 0)
+      }
+
+      50% {
+        transform: translate(-30%, 50%)
+      }
+
+      100% {
+        transform: translate(0, 0)
+      }
+    }
+
+    @keyframes pg {
+
+      0%,
+      100% {
+        box-shadow: 0 0 8px var(--g)
+      }
+
+      50% {
+        box-shadow: 0 0 20px var(--g), 0 0 40px rgba(0, 255, 136, .3)
+      }
+    }
+
+    @keyframes shim {
+      0% {
+        left: -100%
+      }
+
+      100% {
+        left: 200%
+      }
+    }
+
+    @keyframes wig {
+
+      0%,
+      100% {
+        transform: scale(1.15) rotate(0)
+      }
+
+      25% {
+        transform: scale(1.15) rotate(3deg)
+      }
+
+      75% {
+        transform: scale(1.15) rotate(-3deg)
+      }
+    }
+
+    @keyframes ap {
+
+      0%,
+      100% {
+        opacity: .5;
+        transform: scale(1)
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.2)
+      }
+    }
+
+    @keyframes scn {
+      from {
+        left: -100%
+      }
+
+      to {
+        left: 120%
+      }
+    }
+
+    @keyframes blk {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0
+      }
+    }
+
+    @media(max-width:768px) {
+      #tn {
+        display: none
+      }
+
+      #hbg {
+        display: flex !important
+      }
+
+      .hero {
+        flex-direction: column;
+        padding: 40px 20px;
+        text-align: center
+      }
+
+      .hrg {
+        display: none
+      }
+
+      .hbt {
+        justify-content: center
+      }
+
+      .cgd {
+        grid-template-columns: 1fr
+      }
+
+      .bag {
+        grid-template-columns: 1fr
+      }
+
+      .strw {
+        gap: 40px
+      }
+
+      .psg {
+        grid-template-columns: 1fr
+      }
+
+      .parc {
+        display: none
+      }
+
+      .qgc {
+        grid-template-columns: 1fr
+      }
+
+      .smk {
+        flex-direction: column
+      }
+
+      .ag4 {
+        grid-template-columns: 1fr 1fr
+      }
+
+      footer {
+        padding: 20px
+      }
+    }
+  </style>
+
+<body><canvas id="bgc"></canvas>
+  <div class="bl a"></div>
+  <div class="bl b"></div>
+  <div class="bl c"></div>
+  <div class="grn"></div>
+  <nav>
+    <div class="nl"><svg class="nhx" viewBox="0 0 38 38">
+        <polygon points="19,2 35,10 35,28 19,36 3,28 3,10" fill="none" stroke="#00e5ff" stroke-width="1.5"
+          opacity=".7" />
+        <circle cx="19" cy="13" r="2.5" fill="#f59e0b" />
+        <circle cx="24" cy="22" r="2.5" fill="#ef4444" />
+        <circle cx="14" cy="22" r="2.5" fill="#00ff88" />
+      </svg>
+      <div class="nt">IntelliFlow <em>AI Grid</em></div>
+    </div>
+    <div id="tn"><button class="tb on" data-tab="h">Home</button><button class="tb"
+        data-tab="s">Simulation</button><button class="tb" data-tab="a">Analytics</button><button class="tb"
+        data-tab="b">Before/After</button><button class="tb" data-tab="p">Prediction</button><button class="tb"
+        data-tab="cam">Camera</button><button class="tb" data-tab="img">Image Bank</button></div>
+    <div class="nr">
+      <div class="lbg">
+        <div class="ldt"></div>LIVE
+      </div>
+      <div class="bwp"><svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M10 2a6 6 0 00-6 6v3l-1.5 2H17.5L16 11V8a6 6 0 00-6-6zM8.5 17a1.5 1.5 0 003 0" stroke="#8899aa"
+            stroke-width="1.5" stroke-linecap="round" />
+        </svg>
+        <div class="bbd">3</div>
+      </div>
+      <div class="avt">AI</div>
+    </div><button id="hbg" aria-label="Menu"><span></span><span></span><span></span></button>
+  </nav>
+  <div id="mmnav"><button class="tb on" data-tab="h">Home</button><button class="tb"
+      data-tab="s">Simulation</button><button class="tb" data-tab="a">Analytics</button><button class="tb"
+      data-tab="b">Before/After</button><button class="tb" data-tab="p">Prediction</button><button class="tb"
+      data-tab="cam">Camera</button><button class="tb" data-tab="img">Image Bank</button></div>
+  <main id="ct">
+    <section class="pnl on" id="pnh">
+      <div class="hero">
+        <div class="hlt">
+          <p class="hlb">[ Next-Gen Urban Mobility ]</p>
+          <h1 class="hh"><span class="wd" style="animation-delay:.3s">AI</span> <span class="wd"
+              style="animation-delay:.38s">Traffic</span> <span class="wd gw"
+              style="animation-delay:.46s">Optimization</span><br><span class="wd"
+              style="animation-delay:.54s">&amp;</span> <span class="wd" style="animation-delay:.62s">Emergency</span>
+            <span class="wd gw" style="animation-delay:.7s">Grid</span>
+          </h1>
+          <p class="hsu">Predictive signal control with zero-delay emergency response</p>
+          <div class="hbt"><button class="bpr" id="bls">🚀 Launch Simulation</button><button class="bsc" id="bla">📊
+              View Analytics</button></div>
+        </div>
+        <div class="hrg"><svg viewBox="0 0 480 400" width="460" xmlns="http://www.w3.org/2000/svg"
+            style="max-width:100%">
+            <defs>
+              <style>
+                .rdd {
+                  fill: #12182a
+                }
+
+                .tlr {
+                  fill: #ef4444
+                }
+
+                .tlg {
+                  fill: #1a3a1a
+                }
+
+                .tlon {
+                  fill: #00ff88 !important
+                }
+
+                .car1 {
+                  animation: c1 6s linear infinite
+                }
+
+                .car2 {
+                  animation: c2 6s linear infinite
+                }
+
+                .car3 {
+                  animation: c3 6s linear infinite
+                }
+
+                .amb {
+                  animation: ca 6s linear infinite
+                }
+
+                .s1x {
+                  animation: st1 .4s ease-in-out infinite
+                }
+
+                .s2x {
+                  animation: st2 .4s ease-in-out infinite
+                }
+
+                @keyframes c1 {
+                  0% {
+                    transform: translate(229px, 20px)
+                  }
+
+                  40% {
+                    transform: translate(229px, 112px)
+                  }
+
+                  60% {
+                    transform: translate(229px, 112px)
+                  }
+
+                  100% {
+                    transform: translate(229px, 20px)
+                  }
+                }
+
+                @keyframes c2 {
+                  0% {
+                    transform: translate(310px, 168px)
+                  }
+
+                  40% {
+                    transform: translate(310px, 168px)
+                  }
+
+                  60% {
+                    transform: translate(170px, 168px)
+                  }
+
+                  100% {
+                    transform: translate(310px, 168px)
+                  }
+                }
+
+                @keyframes c3 {
+                  0% {
+                    transform: translate(60px, 168px)
+                  }
+
+                  40% {
+                    transform: translate(60px, 168px)
+                  }
+
+                  60% {
+                    transform: translate(185px, 168px)
+                  }
+
+                  100% {
+                    transform: translate(60px, 168px)
+                  }
+                }
+
+                @keyframes ca {
+
+                  0%,
+                  55% {
+                    transform: translate(227px, 320px)
+                  }
+
+                  80% {
+                    transform: translate(227px, -20px)
+                  }
+
+                  100% {
+                    transform: translate(227px, -20px)
+                  }
+                }
+
+                @keyframes st1 {
+
+                  0%,
+                  100% {
+                    fill: #ef4444
+                  }
+
+                  50%,
+                  75% {
+                    fill: #00ff88
+                  }
+                }
+
+                @keyframes st2 {
+
+                  0%,
+                  100% {
+                    fill: #1a3a1a
+                  }
+
+                  50%,
+                  75% {
+                    fill: #00ff88
+                  }
+                }
+
+                @keyframes st3 {
+
+                  0%,
+                  100% {
+                    fill: #00ff88
+                  }
+
+                  50%,
+                  75% {
+                    fill: #ef4444
+                  }
+                }
+
+                @keyframes ss1 {
+
+                  0%,
+                  49% {
+                    fill: #3b82f6
+                  }
+
+                  50%,
+                  100% {
+                    fill: rgba(59, 130, 246, .15)
+                  }
+                }
+
+                @keyframes ss2 {
+
+                  0%,
+                  49% {
+                    fill: rgba(239, 68, 68, .15)
+                  }
+
+                  50%,
+                  100% {
+                    fill: #ef4444
+                  }
+                }
+              </style>
+            </defs>
+            <rect width="480" height="400" fill="#060e1c" />
+            <rect class="rdd" x="185" y="0" width="110" height="400" />
+            <rect class="rdd" x="0" y="155" width="480" height="90" />
+            <line x1="240" y1="0" x2="240" y2="155" stroke="rgba(255,255,255,.12)" stroke-width="1"
+              stroke-dasharray="8,6" />
+            <line x1="240" y1="245" x2="240" y2="400" stroke="rgba(255,255,255,.12)" stroke-width="1"
+              stroke-dasharray="8,6" />
+            <line x1="0" y1="200" x2="185" y2="200" stroke="rgba(255,255,255,.12)" stroke-width="1"
+              stroke-dasharray="8,6" />
+            <line x1="295" y1="200" x2="480" y2="200" stroke="rgba(255,255,255,.12)" stroke-width="1"
+              stroke-dasharray="8,6" />
+            <rect x="185" y="155" width="110" height="90" fill="rgba(245,158,11,.05)" stroke="rgba(245,158,11,.18)"
+              stroke-width="1" />
+            <g class="car1">
+              <rect width="20" height="34" rx="3" fill="#2563eb" />
+              <rect y="6" width="20" height="14" rx="2" fill="rgba(147,197,253,.5)" />
+            </g>
+            <g class="car2">
+              <rect width="34" height="20" rx="3" fill="#0891b2" />
+              <rect x="6" width="16" height="20" rx="2" fill="rgba(103,232,249,.4)" />
+            </g>
+            <g class="car3">
+              <rect width="34" height="20" rx="3" fill="#7c3aed" />
+              <rect x="6" width="16" height="20" rx="2" fill="rgba(196,181,253,.4)" />
+            </g>
+            <g class="amb">
+              <rect width="24" height="40" rx="3" fill="white" />
+              <rect y="8" width="24" height="16" rx="2" fill="rgba(191,219,254,.5)" />
+              <rect x="10" y="27" width="4" height="12" fill="#ef4444" rx="1" />
+              <rect x="5" y="31" width="14" height="4" fill="#ef4444" rx="1" />
+              <rect x="2" y="2" width="5" height="3" rx="1" class="s1x" />
+              <rect x="17" y="2" width="5" height="3" rx="1" class="s2x" />
+            </g>
+            <g>
+              <rect x="173" y="116" width="9" height="30" rx="2" fill="#0f172a" stroke="rgba(255,255,255,.1)"
+                stroke-width=".5" />
+              <circle cx="177" cy="123" r="3" class="tlr" style="animation:st1 6s linear infinite" />
+              <circle cx="177" cy="133" r="3" class="tlg" style="animation:st2 6s linear infinite" />
+            </g>
+            <g>
+              <rect x="298" y="254" width="9" height="30" rx="2" fill="#0f172a" stroke="rgba(255,255,255,.1)"
+                stroke-width=".5" />
+              <circle cx="302" cy="261" r="3" class="tlr" style="animation:st1 6s linear infinite" />
+              <circle cx="302" cy="271" r="3" class="tlg" style="animation:st2 6s linear infinite" />
+            </g>
+            <g>
+              <rect x="298" y="148" width="30" height="9" rx="2" fill="#0f172a" stroke="rgba(255,255,255,.1)"
+                stroke-width=".5" />
+              <circle cx="305" cy="152" r="3" fill="#ef4444" style="animation:st3 6s linear infinite" />
+              <circle cx="316" cy="152" r="3" fill="#00ff88" />
+            </g>
+          </svg></div>
+      </div>
+      <div class="qsec">
+        <div class="qgl"></div>
+        <blockquote class="qtt">
+          <div class="scln"></div>"We don't just manage traffic — we predict, prioritize, and save lives."
+        </blockquote>
+      </div>
+      <div class="pssec">
+        <div class="pssec-inner">
+          <div class="psg">
+            <div>
+              <div class="pchd"><span class="psh rr">❌ THE PROBLEM</span></div>
+              <div class="pcd rr">Fixed signal timings — congestion at every cycle</div>
+              <div class="pcd rr">Ambulance stuck in gridlock — critical minutes lost</div>
+              <div class="pcd rr">Reactive management — responding after congestion</div>
+              <div class="pcd rr">Subjective decisions — no data-driven optimization</div>
+            </div>
+            <div class="parc">
+              <div class="parr">→</div>
+              <div class="parr">→</div>
+              <div class="parr">→</div>
+              <div class="parr">→</div>
+            </div>
+            <div>
+              <div class="pchd"><span class="psh ss">✅ OUR SOLUTION</span></div>
+              <div class="pcd ss">AI-adaptive dynamic signals — density-aware per lane</div>
+              <div class="pcd ss">Green corridor — zero stops, cleared in under 2s</div>
+              <div class="pcd ss">Predictive AI — 10s pre-green activation before peak</div>
+              <div class="pcd ss">Quantum QAOA — provably optimal phase allocation</div>
+            </div>
+          </div>
+        </div>
+        <div class="ftsec">
+          <p class="stl">// Core Capabilities</p>
+          <div class="cgd">
+            <div class="fcd"><span class="fic">🚦</span>
+              <div class="ftl">Dynamic Signals</div>
+              <div class="fds">Density-aware timing.<br>Real-time adaptation per lane.</div>
+              <div class="fst">↓ 38% avg wait time</div>
+            </div>
+            <div class="fcd"><span class="fic">🚑</span>
+              <div class="ftl">Emergency Corridor</div>
+              <div class="fds">Instantaneous green wave.<br>Lane clearing in &lt;2s.</div>
+              <div class="fst">⚡ &lt;2s response</div>
+            </div>
+            <div class="fcd"><span class="fic">🔮</span>
+              <div class="ftl">Predictive AI</div>
+              <div class="fds">TF.js trained on 800 patterns.<br>15-minute forecast.</div>
+              <div class="fst">📈 800 training samples</div>
+            </div>
+            <div class="fcd"><span class="fic">⚛</span>
+              <div class="ftl">Quantum Optimization</div>
+              <div class="fds">4-qubit QAOA circuit.<br>Optimal phase allocation.</div>
+              <div class="fst">🔬 4-qubit QAOA</div>
+            </div>
+            <div class="fcd"><span class="fic">🗺</span>
+              <div class="ftl">2D Simulation</div>
+              <div class="fds">Live junction grid with<br>signal states &amp; vehicle flow.</div>
+              <div class="fst">🔄 25 junctions live</div>
+            </div>
+            <div class="fcd"><span class="fic">🌐</span>
+              <div class="ftl">3D Simulation</div>
+              <div class="fds">Three.js city environment<br>with Delhi road network.</div>
+              <div class="fst">🏙 Full Delhi grid</div>
+            </div>
+          </div>
+        </div>
+        <div class="stsec">
+          <p class="stl" style="margin-bottom:48px">// By The Numbers</p>
+          <div class="strw" id="strw">
+            <div><span class="stn" id="st0" data-t="38" data-sf="%">0%</span>
+              <div class="stlb">Avg Wait Reduction</div>
+            </div>
+            <div><span class="stn" id="st1" data-t="2" data-pf="&lt;" data-sf="s">&lt;0s</span>
+              <div class="stlb">Emergency Response</div>
+            </div>
+            <div><span class="stn" id="st2" data-t="800" data-sf="">0</span>
+              <div class="stlb">ML Training Samples</div>
+            </div>
+            <div><span class="stn" id="st3" data-t="25" data-sf="">0</span>
+              <div class="stlb">Junctions Optimized</div>
+            </div>
+          </div>
+        </div>
+        <footer>IntelliFlow AI Grid © 2025 &nbsp;·&nbsp; Built with Three.js · TF.js · QAOA</footer>
+    </section>
+    <section class="pnl" id="pns">
+      <div class="smw">
+        <div class="smh">
+          <div class="bld"></div> 🗺 Live Traffic Simulation
+        </div>
+      </div>
+      <iframe
+        id="sim-frame"
+        src="CODE_MANIACS_DELHI.html"
+        style="width:100%;height:calc(100vh - 80px);border:none;display:block;"
+        allow="camera; microphone; autoplay"
+      ></iframe>
+    </section>
+    <section class="pnl" id="pna">
+      <canvas id="an-particles"></canvas>
+      <div class="an-wrap">
+        <!-- Header -->
+        <div class="an-header">
+          <div class="an-header-dot"></div>
+          <h2>📊 <em>AI Analytics</em> Command Center</h2>
+          <span class="an-header-badge" id="an-status">● LIVE DATA</span>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <span class="kpi-icon">⏱</span>
+            <div class="kpi-label">Avg Wait Time</div>
+            <div class="kpi-value green" id="kpi-wait">—</div>
+            <div class="kpi-delta">Target: <b>&lt;15s</b></div>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-icon">📈</span>
+            <div class="kpi-label">Throughput</div>
+            <div class="kpi-value cyan" id="kpi-throughput">—</div>
+            <div class="kpi-delta">Moving: <b>optimizing</b></div>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-icon">🚗</span>
+            <div class="kpi-label">Stopped Vehicles</div>
+            <div class="kpi-value amber" id="kpi-stopped">—</div>
+            <div class="kpi-delta">Wait saved: <b id="kpi-waitsaved">—</b></div>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-icon">⚡</span>
+            <div class="kpi-label">Signal Efficiency</div>
+            <div class="kpi-value violet" id="kpi-eff">—</div>
+            <div class="kpi-delta">QAOA: <b>active</b></div>
+          </div>
+        </div>
+
+        <!-- Live Traffic Flow Graph -->
+        <div class="an-graph-card">
+          <div class="an-graph-header">
+            <div class="an-graph-title"><span class="dot"></span> Live Traffic Flow (last 40s)</div>
+            <span class="an-graph-badge" id="an-flow-rate">0 veh/s</span>
+          </div>
+          <svg id="an-flow-svg" width="100%" height="100" viewBox="0 0 800 100" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="an-flow-grad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#00e5ff"/>
+                <stop offset="100%" stop-color="#7c3aed"/>
+              </linearGradient>
+              <linearGradient id="an-flow-area" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#00e5ff" stop-opacity=".18"/>
+                <stop offset="100%" stop-color="#00e5ff" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <polygon id="an-flow-area-poly" points="0,100 800,100" fill="url(#an-flow-area)"/>
+            <polyline id="an-flow-line" points="0,80 800,80" fill="none" stroke="url(#an-flow-grad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <!-- Split: Progress Bars + AI Insight -->
+        <div class="an-split">
+          <!-- Environmental Impact -->
+          <div class="an-progress-card">
+            <div class="an-progress-title">🌿 Environmental Impact</div>
+            <div class="an-pb">
+              <div class="an-pb-header"><span class="an-pb-label">CO₂ Saved</span><span class="an-pb-val" id="pb-co2">0.00t</span></div>
+              <div class="an-pb-track"><div class="an-pb-fill co2" id="pbf-co2" style="width:0%"></div></div>
+            </div>
+            <div class="an-pb">
+              <div class="an-pb-header"><span class="an-pb-label">Fuel Saved</span><span class="an-pb-val" id="pb-fuel">0.00kL</span></div>
+              <div class="an-pb-track"><div class="an-pb-fill fuel" id="pbf-fuel" style="width:0%"></div></div>
+            </div>
+            <div class="an-pb">
+              <div class="an-pb-header"><span class="an-pb-label">Idle Reduction</span><span class="an-pb-val" id="pb-idle">0%</span></div>
+              <div class="an-pb-track"><div class="an-pb-fill idle" id="pbf-idle" style="width:0%"></div></div>
+            </div>
+            <div class="an-pb">
+              <div class="an-pb-header"><span class="an-pb-label">System Efficiency</span><span class="an-pb-val" id="pb-eff">0%</span></div>
+              <div class="an-pb-track"><div class="an-pb-fill eff" id="pbf-eff" style="width:0%"></div></div>
+            </div>
+          </div>
+
+          <!-- AI Insight Panel -->
+          <div class="an-insight-card">
+            <div class="an-insight-title"><span class="brain">🤖</span> AI Intelligence Feed</div>
+            <div class="an-insight-messages" id="an-insights"></div>
+            <div class="an-insight-typing">AI analyzing <div class="dots"><span></span><span></span><span></span></div></div>
+          </div>
+        </div>
+
+        <!-- Split: Predictive Chart + QAOA State -->
+        <div class="an-split">
+          <!-- Predictive Chart -->
+          <div class="an-predict-card">
+            <div class="an-predict-title">🔮 Predictive Traffic (next 15 min)</div>
+            <svg id="an-predict-svg" width="100%" height="100" viewBox="0 0 800 100" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="an-pred-area" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#7c3aed" stop-opacity=".15"/>
+                  <stop offset="100%" stop-color="#7c3aed" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <polygon id="an-pred-area-poly" points="0,100 800,100" fill="url(#an-pred-area)"/>
+              <polyline id="an-pred-line" points="0,80 800,80" fill="none" stroke="#a78bfa" stroke-width="2" stroke-dasharray="6,4" stroke-linecap="round"/>
+              <line x1="400" y1="0" x2="400" y2="100" stroke="rgba(248,113,113,.4)" stroke-width="1" stroke-dasharray="3,3"/>
+              <text x="405" y="12" fill="#f87171" font-size="9" font-family="JetBrains Mono,monospace">NOW</text>
+            </svg>
+          </div>
+
+          <!-- QAOA State -->
+          <div class="an-qaoa-card">
+            <div class="an-qaoa-title">⚛ QAOA Quantum State</div>
+            <div class="an-qaoa-grid">
+              <div class="an-qubit-row"><span class="an-qubit-label">|q₀⟩</span><div class="an-qubit-track"><div class="an-qubit-fill" id="aq0" style="width:50%"></div></div><span class="an-qubit-pct" id="aqp0">50%</span></div>
+              <div class="an-qubit-row"><span class="an-qubit-label">|q₁⟩</span><div class="an-qubit-track"><div class="an-qubit-fill" id="aq1" style="width:50%"></div></div><span class="an-qubit-pct" id="aqp1">50%</span></div>
+              <div class="an-qubit-row"><span class="an-qubit-label">|q₂⟩</span><div class="an-qubit-track"><div class="an-qubit-fill" id="aq2" style="width:50%"></div></div><span class="an-qubit-pct" id="aqp2">50%</span></div>
+              <div class="an-qubit-row"><span class="an-qubit-label">|q₃⟩</span><div class="an-qubit-track"><div class="an-qubit-fill" id="aq3" style="width:50%"></div></div><span class="an-qubit-pct" id="aqp3">50%</span></div>
+            </div>
+            <div class="an-qaoa-states" id="an-qaoa-states"></div>
+            <div class="an-qaoa-result" id="an-qaoa-result">Awaiting quantum optimization data…</div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="an-footer">
+          <span>Update Rate: <b>1s</b></span>
+          <span>Source: <b>QAOA + TF.js</b></span>
+          <span>Junctions: <b>25</b></span>
+        </div>
+      </div>
+    </section>
+    <section class="pnl" id="pnb">
+      <div class="baw">
+        <div class="bag">
+          <div class="bap bfr">
+            <div class="bapt">FIXED TIMING</div>
+            <div class="barw"><span class="bmv">Avg Wait</span><span class="vbd">68s</span></div>
+            <div class="barw"><span class="bmv">Max Wait</span><span class="vbd">142s</span></div>
+            <div class="barw"><span class="bmv">Throughput</span><span class="vbd">512/hr</span></div>
+            <div class="barw"><span class="bmv">CO₂/hr</span><span class="vbd">14.2kg</span></div>
+          </div>
+          <div class="bap afr">
+            <div class="bapt">QAOA ADAPTIVE</div>
+            <div class="barw"><span class="bmv">Avg Wait</span><span class="vgd">24s</span></div>
+            <div class="barw"><span class="bmv">Max Wait</span><span class="vgd">58s</span></div>
+            <div class="barw"><span class="bmv">Throughput</span><span class="vgd">847/hr</span></div>
+            <div class="barw"><span class="bmv">CO₂/hr</span><span class="vgd">8.6kg</span></div>
+          </div>
+        </div>
+        <div class="bai">↑ 38% overall efficiency improvement</div>
+      </div>
+    </section>
+    <section class="pnl" id="pnp">
+      <div class="prw">
+        <div class="gl prp">
+          <div class="prtl">📈 15-Minute Ahead Forecast</div><svg width="100%" height="110" viewBox="0 0 800 110">
+            <defs>
+              <linearGradient id="fg" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#00e5ff" stop-opacity=".3" />
+                <stop offset="100%" stop-color="#00e5ff" stop-opacity="0" />
+              </linearGradient>
+            </defs>
+            <polygon
+              points="0,100 33,95 67,85 100,70 133,50 167,30 200,25 233,35 267,60 300,75 333,80 367,70 400,65 433,75 467,85 500,60 533,30 567,20 600,35 633,60 667,80 700,85 733,75 767,65 800,60 800,100"
+              fill="url(#fg)" />
+            <polyline
+              points="0,100 33,95 67,85 100,70 133,50 167,30 200,25 233,35 267,60 300,75 333,80 367,70 400,65 433,75 467,85 500,60 533,30 567,20 600,35 633,60 667,80 700,85 733,75 767,65 800,60"
+              fill="none" stroke="#00e5ff" stroke-width="2" />
+            <line x1="400" y1="0" x2="400" y2="110" stroke="#f87171" stroke-width="1.5" stroke-dasharray="4,4" /><text
+              x="405" y="12" fill="#f87171" font-size="10" font-family="JetBrains Mono,monospace">NOW</text>
+          </svg>
+        </div>
+        <div class="gl prp">
+          <div class="prtl">⚡ Signal Pre-Activation Timeline</div>
+          <div class="tlc" id="tlc">
+            <div class="tln">
+              <div class="tld ps"></div>
+              <div class="tll">J-Lodi</div>
+            </div>
+            <div class="tli"></div>
+            <div class="tln">
+              <div class="tld ps"></div>
+              <div class="tll">J-CP</div>
+            </div>
+            <div class="tli"></div>
+            <div class="tln">
+              <div class="tld on" id="tl-active"></div>
+              <div class="tll">J-ITO</div>
+            </div>
+            <div class="tli"></div>
+            <div class="tln">
+              <div class="tld"></div>
+              <div class="tll">J-IP</div>
+              <div class="tll" style="color:var(--c)" id="tc3">3s</div>
+            </div>
+            <div class="tli"></div>
+            <div class="tln">
+              <div class="tld"></div>
+              <div class="tll">J-Mandi</div>
+              <div class="tll" style="color:var(--c)" id="tc4">8s</div>
+            </div>
+          </div>
+        </div>
+        <div class="gl prp">
+          <div class="prtl">⚛ QAOA State Vector</div>
+          <div class="qgc">
+            <div class="qbs" id="qbs">
+              <div class="qbr">
+                <div class="qbl">|0⟩</div>
+                <div class="qbt">
+                  <div class="qbf" style="width:72%"></div>
+                </div>
+              </div>
+              <div class="qbr">
+                <div class="qbl">|1⟩</div>
+                <div class="qbt">
+                  <div class="qbf" style="width:45%"></div>
+                </div>
+              </div>
+              <div class="qbr">
+                <div class="qbl">|2⟩</div>
+                <div class="qbt">
+                  <div class="qbf" style="width:88%"></div>
+                </div>
+              </div>
+              <div class="qbr">
+                <div class="qbl">|3⟩</div>
+                <div class="qbt">
+                  <div class="qbf" style="width:31%"></div>
+                </div>
+              </div>
+            </div>
+            <div class="sgd" id="sgd"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script>
+    function initTabs() {
+      const tabs = [...document.querySelectorAll('.tb')];
+      const panels = [...document.querySelectorAll('.pnl')];
+      function go(id) {
+        tabs.forEach(t => t.classList.toggle('on', t.dataset.tab === id));
+        let pId = ['cam', 'img', 's'].includes(id) ? 'pns' : 'pn' + id;
+        panels.forEach(p => p.classList.toggle('on', p.id === pId));
+        onTabSwitch(id);
+      }
+      tabs.forEach(t => t.addEventListener('click', () => { go(t.dataset.tab); document.getElementById('mmnav').classList.remove('op') }));
+      document.getElementById('bls').onclick = () => go('s');
+      document.getElementById('bla').onclick = () => go('a');
+      document.getElementById('hbg').onclick = () => document.getElementById('mmnav').classList.toggle('op');
+    }
+    function initCounters() {
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (!e.isIntersecting) return;
+          const el = e.target, t = +el.dataset.t, pf = el.dataset.pf || '', sf = el.dataset.sf || '';
+          let s = null;
+          function tick(now) {
+            if (!s) s = now;
+            const p = Math.min((now - s) / 1200, 1);
+            el.textContent = pf + Math.floor(p * t) + sf;
+            if (p < 1) requestAnimationFrame(tick);
+          }
+          requestAnimationFrame(tick); obs.unobserve(el);
+        });
+      }, { threshold: .5 });
+      document.querySelectorAll('[data-t]').forEach(el => obs.observe(el));
+    }
+    function initBackgroundBlobs() {
+      const cv = document.getElementById('bgc');
+      const cx = cv.getContext('2d');
+      function resize() { cv.width = innerWidth; cv.height = innerHeight; }
+      resize(); window.addEventListener('resize', resize);
+      let t = 0;
+      (function draw() {
+        cx.clearRect(0, 0, cv.width, cv.height);
+        const ox = Math.cos(t * .0003) * 40, oy = Math.sin(t * .0004) * 30;
+        const rows = Math.ceil(cv.height / 52) + 2, cols = Math.ceil(cv.width / 60) + 2;
+        cx.strokeStyle = 'rgba(0,229,255,0.035)'; cx.lineWidth = 1;
+        for (let r = 0; r < rows; r++)for (let c = 0; c < cols; c++) {
+          const x = c * 60 + (r % 2) * 30 + (ox % 60), y = r * 52 + (oy % 52), s = 25;
+          cx.beginPath();
+          for (let i = 0; i < 6; i++) { const a = Math.PI / 3 * i - Math.PI / 6; i ? cx.lineTo(x + s * Math.cos(a), y + s * Math.sin(a)) : cx.moveTo(x + s * Math.cos(a), y + s * Math.sin(a)); }
+          cx.closePath(); cx.stroke();
+        }
+        t++; requestAnimationFrame(draw);
+      })();
+    }
+    function initAmbulanceAnimation() {
+      const strobes = document.querySelectorAll('.s1x,.s2x');
+      if (!strobes.length) return;
+    }
+    function initQubitPulse() {
+      const fills = document.querySelectorAll('.qbf');
+      const grid = document.getElementById('sgd');
+      if (grid && !grid.children.length) {
+        for (let i = 0; i < 16; i++) {
+          const d = document.createElement('div'); d.className = 'sgc';
+          const v = Math.random();
+          d.style.background = `rgba(0,229,255,${v.toFixed(2)})`;
+          d.style.color = v > .5 ? '#020408' : '#00e5ff';
+          d.textContent = (v * 100).toFixed(0) + '%';
+          grid.appendChild(d);
+        }
+      }
+      setInterval(() => {
+        fills.forEach(f => {
+          const cur = parseFloat(f.style.width) || 50;
+          f.style.width = Math.min(95, Math.max(10, cur + (Math.random() - .5) * 28)).toFixed(0) + '%';
+        });
+        document.querySelectorAll('#sgd .sgc').forEach(c => {
+          const v = Math.random();
+          c.style.background = `rgba(0,229,255,${v.toFixed(2)})`;
+          c.style.color = v > .5 ? '#020408' : '#00e5ff';
+          c.textContent = (v * 100).toFixed(0) + '%';
+        });
+      }, 1800);
+    }
+    function initPredictionTimeline() {
+      let cur = 2; const nodes = [...document.querySelectorAll('.tld')];
+      setInterval(() => {
+        nodes.forEach((n, i) => { n.classList.remove('on', 'ps'); if (i < cur) n.classList.add('ps'); else if (i === cur) n.classList.add('on'); });
+        cur = (cur + 1) % nodes.length;
+      }, 4000);
+    }
+    function initSimChips() {
+      const ids = ['chv1', 'chv2', 'chv3'], base = [247, 25, 142];
+      setInterval(() => ids.forEach((id, i) => { const el = document.getElementById(id); if (el) el.textContent = base[i] + Math.floor(Math.random() * 10 - 5); }), 2200);
+    }
+    function onTabSwitch(id) {
+      // Paint immediately on tab open using cached data
+      if (id === 'a' && window._simData) _paintAnalytics(window._simData.analytics);
+      if (id === 'b' && window._simData) _paintBeforeAfter(window._simData.beforeAfter);
+      // Keep iframe loaded but visually hidden when not on simulation tab
+      const frame = document.getElementById('sim-frame');
+      const simTabHeader = document.querySelector('#pns .smh');
+      
+      if (frame) {
+        if (['s', 'cam', 'img'].includes(id)) {
+          frame.style.visibility = 'visible';
+          frame.style.position   = 'relative';
+          frame.style.pointerEvents = 'all';
+          
+          let headerHtml = '<div class="bld"></div> ';
+          if (id === 's') headerHtml += '🗺 Live Traffic Simulation';
+          else if (id === 'cam') { headerHtml += '📷 Camera Feed'; }
+          else if (id === 'img') { headerHtml += '🖼 Image Bank'; }
+          
+          if(simTabHeader) simTabHeader.innerHTML = headerHtml;
+          frame.contentWindow.postMessage({cmd: 'FOCUS', tab: id}, '*');
+        } else {
+          frame.style.visibility = 'hidden';
+          frame.style.position   = 'absolute';
+          frame.style.pointerEvents = 'none';
+        }
+      }
+    }
+    window.addEventListener('message', function(e) {
+      if (!e.data || e.data.type !== 'SIM_DATA') return;
+      window._simData = e.data; // cache latest payload
+      // If Analytics tab is currently active, refresh immediately
+      if (document.querySelector('.tb[data-tab="a"]')?.classList.contains('on')) {
+        _paintAnalytics(e.data.analytics);
+      }
+      // If Before/After tab is currently active, refresh immediately
+      if (document.querySelector('.tb[data-tab="b"]')?.classList.contains('on')) {
+        _paintBeforeAfter(e.data.beforeAfter);
+      }
+    });
+    // ═══════ ANALYTICS PARTICLE BACKGROUND ═══════
+    (function initAnParticles() {
+      const cv = document.getElementById('an-particles');
+      if (!cv) return;
+      const cx = cv.getContext('2d');
+      const particles = [];
+      function resize() { const r = cv.parentElement.getBoundingClientRect(); cv.width = r.width; cv.height = r.height; }
+      resize(); window.addEventListener('resize', resize);
+      for (let i = 0; i < 60; i++) particles.push({ x: Math.random() * 2000, y: Math.random() * 2000, vx: (Math.random() - .5) * .3, vy: (Math.random() - .5) * .3, r: Math.random() * 1.5 + .5 });
+      (function draw() {
+        cx.clearRect(0, 0, cv.width, cv.height);
+        particles.forEach(p => {
+          p.x += p.vx; p.y += p.vy;
+          if (p.x < 0) p.x = cv.width; if (p.x > cv.width) p.x = 0;
+          if (p.y < 0) p.y = cv.height; if (p.y > cv.height) p.y = 0;
+          cx.beginPath(); cx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          cx.fillStyle = 'rgba(0,229,255,.12)'; cx.fill();
+        });
+        // Draw faint connections
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 120) {
+              cx.beginPath(); cx.moveTo(particles[i].x, particles[i].y); cx.lineTo(particles[j].x, particles[j].y);
+              cx.strokeStyle = `rgba(0,229,255,${(.08 * (1 - dist / 120)).toFixed(3)})`; cx.lineWidth = .5; cx.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(draw);
+      })();
+    })();
+
+    // ═══════ QAOA STATE GRID INIT ═══════
+    (function initAnQaoa() {
+      const grid = document.getElementById('an-qaoa-states');
+      if (!grid || grid.children.length) return;
+      for (let i = 0; i < 16; i++) {
+        const d = document.createElement('div'); d.className = 'an-qs';
+        d.textContent = i.toString(2).padStart(4, '0'); grid.appendChild(d);
+      }
+    })();
+
+    // ═══════ AI INSIGHT ENGINE ═══════
+    const _insightPool = [
+      { icon: '⚠', cls: 'warn', text: 'High congestion detected — <b>optimizing signals</b>' },
+      { icon: '✅', cls: 'good', text: 'Traffic flow <b>optimized</b> successfully' },
+      { icon: '🚑', cls: 'em',   text: 'Emergency corridor <b>activated</b> — green wave deployed' },
+      { icon: '🔄', cls: '',     text: 'Adjusting signal timing <b>dynamically</b>' },
+      { icon: '⚛',  cls: 'good', text: 'QAOA quantum optimization cycle <b>complete</b>' },
+      { icon: '📊', cls: '',     text: 'Density analysis: <b>re-balancing</b> lane distribution' },
+      { icon: '🧠', cls: 'good', text: 'TF.js model predicting <b>next 15-min</b> traffic surge' },
+      { icon: '🌿', cls: 'good', text: 'CO₂ reduction target <b>on track</b> — idle cut active' },
+      { icon: '⚡', cls: 'warn', text: 'Peak hour detected — <b>adaptive timing</b> engaged' },
+      { icon: '🛣', cls: '',     text: 'Lane-level density monitoring <b>active</b> on 25 junctions' },
+      { icon: '📡', cls: 'good', text: 'V2I signal sync <b>operational</b> — latency <2ms' },
+      { icon: '🎯', cls: 'good', text: 'Signal phase allocation <b>optimized</b> by QAOA' }
+    ];
+    let _insightIdx = 0;
+    function _rotateInsight() {
+      const container = document.getElementById('an-insights');
+      if (!container) return;
+      const msgs = container.querySelectorAll('.an-insight-msg');
+      if (msgs.length >= 3) { const oldest = msgs[0]; oldest.style.opacity = '0'; oldest.style.transform = 'translateX(-10px)'; setTimeout(() => oldest.remove(), 400); }
+      const item = _insightPool[_insightIdx % _insightPool.length]; _insightIdx++;
+      const div = document.createElement('div'); div.className = 'an-insight-msg';
+      div.innerHTML = `<span class="${item.cls}">${item.icon}</span> ${item.text}`;
+      container.appendChild(div);
+      requestAnimationFrame(() => requestAnimationFrame(() => div.classList.add('visible')));
+    }
+    // Rotate insights
+    setInterval(_rotateInsight, 3500);
+    _rotateInsight(); setTimeout(_rotateInsight, 800); setTimeout(_rotateInsight, 1600);
+
+    // ═══════ PREDICTIVE CHART ANIMATION ═══════
+    let _predPhase = 0;
+    function _animatePredictive() {
+      _predPhase += 0.03;
+      const line = document.getElementById('an-pred-line');
+      const area = document.getElementById('an-pred-area-poly');
+      if (!line) return;
+      const W = 800, H = 100, pts = [];
+      for (let i = 0; i <= 40; i++) {
+        const x = (i / 40) * W;
+        const base = 50 + 20 * Math.sin(_predPhase + i * 0.25) + 10 * Math.cos(_predPhase * 0.7 + i * 0.4);
+        const y = Math.max(5, Math.min(95, base));
+        pts.push(x.toFixed(1) + ',' + y.toFixed(1));
+      }
+      line.setAttribute('points', pts.join(' '));
+      area.setAttribute('points', '0,100 ' + pts.join(' ') + ' 800,100');
+    }
+    setInterval(_animatePredictive, 80);
+
+    // ═══════ QAOA QUBIT PULSE ═══════
+    setInterval(function() {
+      for (let i = 0; i < 4; i++) {
+        const fill = document.getElementById('aq' + i);
+        const pct = document.getElementById('aqp' + i);
+        if (fill) {
+          const v = Math.min(95, Math.max(10, 50 + (Math.random() - .5) * 60));
+          fill.style.width = v.toFixed(0) + '%';
+          if (pct) pct.textContent = v.toFixed(0) + '%';
+        }
+      }
+      // Light up random states
+      const states = document.querySelectorAll('#an-qaoa-states .an-qs');
+      states.forEach(s => s.classList.remove('hot'));
+      const hotCount = 2 + Math.floor(Math.random() * 3);
+      for (let i = 0; i < hotCount; i++) { const idx = Math.floor(Math.random() * states.length); states[idx]?.classList.add('hot'); }
+      // Update result text
+      const res = document.getElementById('an-qaoa-result');
+      if (res && window._simData) {
+        const ba = window._simData.beforeAfter;
+        if (ba) res.textContent = ba.summary || 'QAOA optimization active…';
+      }
+    }, 1800);
+
+    // ═══════ MAIN PAINT ANALYTICS ═══════
+    function _paintAnalytics(d) {
+      if (!d) return;
+      // KPI Cards
+      const kw = document.getElementById('kpi-wait');
+      const kt = document.getElementById('kpi-throughput');
+      const ks = document.getElementById('kpi-stopped');
+      const ke = document.getElementById('kpi-eff');
+      if (kw) { kw.textContent = d.avgWait; kw.className = 'kpi-value ' + (parseInt(d.avgWait) > 20 ? 'red' : parseInt(d.avgWait) > 10 ? 'amber' : 'green'); }
+      if (kt) { kt.textContent = d.movingPct; }
+      if (ks) { ks.textContent = d.stopped; ks.className = 'kpi-value ' + (d.stopped > 50 ? 'red' : d.stopped > 20 ? 'amber' : 'green'); }
+      if (ke) { ke.textContent = d.waitSaved; }
+      const kws = document.getElementById('kpi-waitsaved');
+      if (kws) kws.textContent = d.waitSaved;
+
+      // Traffic flow graph
+      if (d.flowHist && d.flowHist.length > 1) {
+        const line = document.getElementById('an-flow-line');
+        const area = document.getElementById('an-flow-area-poly');
+        if (line) {
+          const W = 800, H = 100, max = Math.max(...d.flowHist, 1);
+          const pts = d.flowHist.map((v, i) => {
+            const x = (i / (d.flowHist.length - 1)) * W;
+            const y = H - (v / max) * (H - 10);
+            return x.toFixed(1) + ',' + y.toFixed(1);
+          });
+          line.setAttribute('points', pts.join(' '));
+          if (area) area.setAttribute('points', '0,100 ' + pts.join(' ') + ' 800,100');
+        }
+        // Update flow rate badge
+        const rate = document.getElementById('an-flow-rate');
+        if (rate) rate.textContent = d.flowHist[d.flowHist.length - 1] + ' veh/s';
+      }
+
+      // Progress Bars
+      const co2Max = 5, fuelMax = 2, idleMax = 60;
+      const barMap = [
+        { fillId: 'pbf-co2', valId: 'pb-co2', val: d.co2Saved, max: co2Max, label: (d.co2Saved||0).toFixed(2) + 't' },
+        { fillId: 'pbf-fuel', valId: 'pb-fuel', val: d.fuelSaved, max: fuelMax, label: (d.fuelSaved||0).toFixed(2) + 'kL' },
+        { fillId: 'pbf-idle', valId: 'pb-idle', val: d.idleCut, max: idleMax, label: Math.round(d.idleCut||0) + '%' },
+        { fillId: 'pbf-eff',  valId: 'pb-eff',  val: d.sigEff, max: 100, label: Math.round(d.sigEff||0) + '%' }
+      ];
+      barMap.forEach(b => {
+        const fill = document.getElementById(b.fillId);
+        const val = document.getElementById(b.valId);
+        const pct = Math.min(100, ((b.val || 0) / b.max) * 100);
+        if (fill) fill.style.width = pct + '%';
+        if (val) val.textContent = b.label;
+      });
+
+      // Vehicle type counts for insight
+      if (d.vehTypes) {
+        const total = Object.values(d.vehTypes).reduce((a, b) => a + b, 0);
+        const status = document.getElementById('an-status');
+        if (status) status.textContent = '● ' + total + ' VEHICLES TRACKED';
+      }
+    }
+    function _paintBeforeAfter(d) {
+      if (!d) return;
+      // QAOA ADAPTIVE column — find .afr rows
+      const afterRows = document.querySelectorAll('#pnb .bap.afr .barw');
+      const liveVals = [d.ourWait, d.ourEff, d.ourMoving + '/hr', d.ourCO2];
+      afterRows.forEach((row, i) => {
+        const val = row.querySelector('.vgd');
+        if (val && liveVals[i] !== undefined) val.textContent = liveVals[i];
+      });
+      // Improvement percentage
+      const bai = document.querySelector('#pnb .bai');
+      if (bai) bai.textContent = '↑ ' + (d.improvePct || 0) + '% overall efficiency improvement';
+    }
+    initTabs(); initCounters(); initBackgroundBlobs(); initAmbulanceAnimation(); initQubitPulse(); initPredictionTimeline();
+    document.querySelectorAll('.wd').forEach((w, i) => { w.style.animation = `fsi 0.5s ${.3 + i * .08}s ease forwards`; });
+  </script>
+</body>
+
+</html>
